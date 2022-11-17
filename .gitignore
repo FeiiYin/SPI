@@ -1,0 +1,5 @@
+.history
+__pycache__
+test/dataset
+test/output
+ZSSGAN
