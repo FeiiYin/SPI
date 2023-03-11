@@ -1,13 +1,13 @@
 ## SPI: 3D GAN Inversion with Facial Symmetry Prior [CVPR 2023]
 
 > **SPI: 3D GAN Inversion with Facial Symmetry Prior** <br>
-> Fei Yin, Yong Zhang, Xuan Wang, Tengfei Wang, Xiaoyu Li, Yuan Gong, Yanbo Fan, Xiaodong Cun, Ying Shan, Cengiz Öztireli, Yujiu Yang 
-> CVPR 2023
+> Fei Yin, Yong Zhang, Xuan Wang, Tengfei Wang, Xiaoyu Li, Yuan Gong, Yanbo Fan, Xiaodong Cun, Ying Shan, Cengiz Öztireli, Yujiu Yang <br>
+> CVPR 2023 <br>
 > [Project](https://feiiyin.github.io/SPI/) <br>
 > [Paper](https://arxiv.org/pdf/2211.16927.pdf) <br>
 
 <div align=center>
-<img src="./assets/pipeline-2.jpg" width=700px>
+<img src="./assets/pipeline-2.jpg" width=800px>
 </div>
 
 #### Abstract 
@@ -66,7 +66,7 @@ CUDA_VISIBLE_DEVICES=0 python spi/run_inversion.py \
 
 3. Editing
 
-We employ the ZSSGAN to perform editing. Please change the `PATH_DICT` in clip_loss to your local CLIP checkpoint first. Then use the following example code to editing.
+We employ the ZSSGAN to perform editing. Please change the `PATH_DICT` in `ZSSGAN/criteria/clip_loss.py` to your local CLIP checkpoint first. Then use the following example code to editing.
 
 ```
 CUDA_VISIBLE_DEVICES=1 python ZSSGAN/train.py --size 512 \
