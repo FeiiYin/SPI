@@ -94,7 +94,7 @@ If you find this work useful for your research, please cite:
 ``` 
 @article{yin20223d,
   title={3D GAN Inversion with Facial Symmetry Prior},
-  author={Yin, Fei and Zhang, Yong and Wang, Xuan and Wang, Tengfei and Li, Xiaoyu and Gong, Yuan and Fan, Yanbo and Cun, Xiaodong and Shan, Ying and Oztireli, Cengiz and others},
+  author={Yin, Fei and Zhang, Yong and Wang, Xuan and Wang, Tengfei and Li, Xiaoyu and Gong, Yuan and Fan, Yanbo and Cun, Xiaodong and Shan, Ying and Oztireli, Cengiz and Yang, Yujiu},
   journal={arXiv preprint arXiv:2211.16927},
   year={2022}
 }
