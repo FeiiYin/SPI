@@ -1,9 +1,10 @@
 ## SPI: 3D GAN Inversion with Facial Symmetry Prior [CVPR 2023]
 
 > **SPI: 3D GAN Inversion with Facial Symmetry Prior** <br>
-> [Project](https://feiiyin.github.io/SPI/)
-> [Paper](https://arxiv.org/pdf/2211.16927.pdf)
+> Fei Yin, Yong Zhang, Xuan Wang, Tengfei Wang, Xiaoyu Li, Yuan Gong, Yanbo Fan, Xiaodong Cun, Ying Shan, Cengiz Öztireli, Yujiu Yang 
 > CVPR 2023
+> [Project](https://feiiyin.github.io/SPI/) <br>
+> [Paper](https://arxiv.org/pdf/2211.16927.pdf) <br>
 
 <div align=center>
 <img src="./assets/pipeline-2.jpg" width=700px>
