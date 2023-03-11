@@ -100,15 +100,6 @@ class BaseCoach:
 
     def calc_inversions(self, image_name, image, camera, fg_mask=None):
         initial_w = None
-        if hyperparameters.use_encoder:
-            initial_w = self.inversion_encoder.encode(image, camera)
-            if self.use_wandb:
-                camera_m = cal_mirror_c(camera)
-                _ = log_image_from_w(initial_w, camera, self.G, f'{image_name}_enc_inv')
-                _ = log_image_from_w(initial_w, camera_m, self.G, f'{image_name}_enc_inv_m')
-        if not hyperparameters.use_encoder and hyperparameters.use_G_avg:
-            initial_w = self.original_G.backbone.mapping.w_avg.reshape(1, 1, 512).repeat(1, 14, 1)
-        
         assert hyperparameters.first_inv_type in ['sg', 'sgw+', 'mir', 'reg']
         if hyperparameters.first_inv_type == 'sg':
             w = w_projector.project(self.G, image, camera, vgg16=self.vgg16,
@@ -141,19 +132,11 @@ class BaseCoach:
     def configure_optimizers(self):
         print('[Note]: Fintune only All parameters')
         optimizer = torch.optim.Adam(self.G.parameters(), lr=hyperparameters.pti_learning_rate)
-        # Fintune only nerf parameters
-        # print('[Note]: Fintune only nerf parameters')
-        # optimizer = torch.optim.Adam(self.G.backbone.parameters(), lr=hyperparameters.pti_learning_rate)
         return optimizer
 
     @abc.abstractmethod
     def calc_loss(self):
         return
-
-    def initilize_e4e(self):
-        self.inversion_encoder = load_modules.load_inversion_encoder()
-        del self.inversion_encoder.generator
-        toogle_grad(self.inversion_encoder, False)
 
     def cal_metric(self, fake, gt, name, fake_m=None):
         if name not in self.metric_dic:

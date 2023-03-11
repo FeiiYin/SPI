@@ -1,13 +1,3 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
-#
-# NVIDIA CORPORATION and its licensors retain all intellectual property
-# and proprietary rights in and to this software, related documentation
-# and any modifications thereto.  Any use, reproduction, disclosure or
-# distribution of this software and related documentation without an express
-# license agreement from NVIDIA CORPORATION is strictly prohibited.
-
-"""Project given image to the latent space of pretrained network pickle."""
-
 import copy
 import numpy as np
 import torch
@@ -19,7 +9,7 @@ from spi.utils.log_utils import log_image
 
 def project(
 		G,
-		target: torch.Tensor,  # [C,H,W] and dynamic range [0,255], W & H must match G output resolution
+		target: torch.Tensor,
 		c,
 		lpips_func,
 		*,
@@ -37,13 +27,7 @@ def project(
 		image_log_step=global_config.log_snapshot,
 		w_name: str
 ):
-	# print('w_plus_projector.')
 	assert target.shape[1:] == (G.img_channels, G.img_resolution, G.img_resolution)
-
-	# def logprint(*args):
-	# 	if verbose:
-	# 		print(*args)
-
 	G = copy.deepcopy(G).eval().requires_grad_(False).to(device).float() # type: ignore
 
 	# Compute w stats.
@@ -54,9 +38,6 @@ def project(
 	w_samples = w_samples[:, :1, :].cpu().numpy().astype(np.float32)  # [N, 1, C]
 	
 	w_avg = np.mean(w_samples, axis=0, keepdims=True)  # [1, 1, C]
-	# np.save('./mpti/training/w_avg.npy')
-	# exit()
-	# w_avg_tensor = torch.from_numpy(w_avg).to(global_config.device).repeat(1, 14, 1)
 	w_std = (np.sum((w_samples - w_avg) ** 2) / w_avg_samples) ** 0.5
 
 	# Setup noise inputs.

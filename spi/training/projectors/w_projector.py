@@ -1,13 +1,3 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
-#
-# NVIDIA CORPORATION and its licensors retain all intellectual property
-# and proprietary rights in and to this software, related documentation
-# and any modifications thereto.  Any use, reproduction, disclosure or
-# distribution of this software and related documentation without an express
-# license agreement from NVIDIA CORPORATION is strictly prohibited.
-
-"""Project given image to the latent space of pretrained network pickle."""
-
 import copy
 import numpy as np
 import torch
@@ -18,7 +8,7 @@ from spi.configs import global_config, hyperparameters
 
 def project(
         G,
-        target: torch.Tensor,  # [C,H,W] and dynamic range [0,255], W & H must match G output resolution
+        target: torch.Tensor,
         camera,
         vgg16,
         *,
@@ -37,11 +27,6 @@ def project(
         image_log_step=global_config.log_snapshot,
         w_name: str
 ):
-    # assert target.shape == (G.img_channels, G.img_resolution, G.img_resolution)
-    # def logprint(*args):
-    #     if verbose:
-    #         print(*args)
-
     G = copy.deepcopy(G).eval().requires_grad_(False).to(device).float()  # type: ignore
 
     # Compute w stats.
@@ -59,13 +44,8 @@ def project(
     # Setup noise inputs.
     noise_bufs = {name: buf for (name, buf) in G.backbone.synthesis.named_buffers() if 'noise_const' in name}
 
-    # Load VGG16 feature detector.
-    # url = 'https://nvlabs-fi-cdn.nvidia.com/stylegan2-ada-pytorch/pretrained/metrics/vgg16.pt'
-    # with dnnlib.util.open_url(url) as f:
-    #     vgg16 = torch.jit.load(f).eval().to(device)
-
     # Features for target image.
-    target_images = (target + 1) * (255 / 2)  # .unsqueeze(0).to(device).to(torch.float32)
+    target_images = (target + 1) * (255 / 2)
     if target_images.shape[2] > 256:
         target_images = F.interpolate(target_images, size=(256, 256), mode='area')
     target_features = vgg16(target_images, resize_images=False, return_lpips=True)
@@ -118,18 +98,10 @@ def project(
                 noise = F.avg_pool2d(noise, kernel_size=2)
         loss = dist + reg_loss * regularize_noise_weight
 
-        # if step % image_log_step == 0:
-        #     with torch.no_grad():
-        #         if use_wandb:
-        #             global_config.training_step += 1
-        #             wandb.log({f'first projection _{w_name}': loss.detach().cpu()}, step=global_config.training_step)
-        #             log_utils.log_image_from_w(w_opt.repeat([1, G.mapping.num_ws, 1]), G, w_name)
-
         # Step
         optimizer.zero_grad(set_to_none=True)
         loss.backward()
         optimizer.step()
-        # logprint(f'step {step + 1:>4d}/{num_steps}: dist {dist:<4.2f} loss {float(loss):<5.2f}')
 
         # Normalize noise.
         with torch.no_grad():

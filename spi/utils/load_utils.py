@@ -13,8 +13,6 @@ from spi.configs import paths_config
 
 
 def load_eg3d(reload_modules=True, device='cuda', network_pkl=None):
-    # kwargs_path = 'configs/ffhqrebalanced512-128.yaml'
-    # network_pkl = '/apdcephfs_cq2/share_1290939/karmyu/Repos/eg3d/checkpoints/ffhq_stdcrop-128.pkl'
     if network_pkl is None:
         network_pkl = paths_config.EG3D_PATH
     
@@ -30,10 +28,6 @@ def load_eg3d(reload_modules=True, device='cuda', network_pkl=None):
         G_new.rendering_kwargs = G.rendering_kwargs
         G = G_new
         
-    # sampling_multiplier = 2
-    # G.rendering_kwargs['depth_resolution'] = int(G.rendering_kwargs['depth_resolution'] * sampling_multiplier)
-    # G.rendering_kwargs['depth_resolution_importance'] = int(
-    #     G.rendering_kwargs['depth_resolution_importance'] * sampling_multiplier)
     G.neural_rendering_resolution = 128
     G.eval()
     return G

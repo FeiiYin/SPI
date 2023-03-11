@@ -4,7 +4,6 @@ from torch.nn.functional import grid_sample
 
 def unproject(depth_map, cam2world_matrix, intrinsics, resolution=128):
     N, M = cam2world_matrix.shape[0], resolution**2
-    # cam_locs_world = cam2world_matrix[:, :3, 3]
     fx = intrinsics[:, 0, 0]
     fy = intrinsics[:, 1, 1]
     cx = intrinsics[:, 0, 2]
@@ -19,7 +18,6 @@ def unproject(depth_map, cam2world_matrix, intrinsics, resolution=128):
 
     x_cam = uv[:, :, 0].view(N, -1)
     y_cam = uv[:, :, 1].view(N, -1)
-    # z_cam = torch.ones((N, M), device=cam2world_matrix.device)
     z_cam = depth_map.view(N, M)
 
     x_lift = (x_cam - cx.unsqueeze(-1) + cy.unsqueeze(-1)*sk.unsqueeze(-1)/fy.unsqueeze(-1) - sk.unsqueeze(-1)*y_cam/fy.unsqueeze(-1)) / fx.unsqueeze(-1) * z_cam
@@ -59,7 +57,6 @@ def __rotate(img1, depth1, ex1, img2, depth2, ex2, in1, in2, img2_mask=None, EPS
     N, H, W = depth1.shape
     resolution = H
 
-    # import pdb; pdb.set_trace()
     xyz1 = unproject(depth1, cam2world_matrix=ex1, intrinsics=in1, resolution=resolution)  # World coord torch.Size([1, 16384, 4])
     uv, z = project(xyz1, ex2, in2, resolution=resolution)
     
@@ -127,11 +124,7 @@ def rotate_with_conffidence(target_camera, target_depth, src_image, src_camera, 
                 src_depth=src_depth, 
                 src_mask=src_mask,
                 EPS=5e-2)
-    # Erode may need
-    # warp_mask = - self.max_pool(- warp_mask)
-    # warp_img = warp_img * warp_mask
-    # log_image(warp_img, f'warp_img_{_i}')
-
+    
     warp_img_rt, warp_mask_rt = rotate(target_camera=src_camera, 
                 target_depth=src_depth, 
                 src_image=warp_img, 
@@ -140,11 +133,9 @@ def rotate_with_conffidence(target_camera, target_depth, src_image, src_camera, 
                 src_mask=warp_mask,
                 EPS=5e-2)
     # log_image(warp_img_rt, f'warp_img_rt_{_i}')
-
     confidence_mask = torch.abs(src_image - warp_img_rt)
 
     # log_image(confidence_mask, f'soft_confidence_mask_{_i}')
-
     confidence_mask = (torch.sum(confidence_mask, dim=1, keepdim=True) < confidence_eps).float()
     # log_image(confidence_mask, f'confidence_mask_{_i}')
     warp_confidence_mask, warp_mask = rotate(target_camera=target_camera, 

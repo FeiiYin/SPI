@@ -100,14 +100,6 @@ def gen_interp_video(
 			raise ValueError('Number of input seeds must be divisible by grid W*H')
 		num_keyframes = len(images) // (grid_w*grid_h)
 
-	# all_seeds = np.zeros(num_keyframes*grid_h*grid_w, dtype=np.int64)
-	# for idx in range(num_keyframes*grid_h*grid_w):
-	#     all_seeds[idx] = seeds[idx % len(seeds)]
-
-	# if shuffle_seed is not None:
-	#     rng = np.random.RandomState(seed=shuffle_seed)
-	#     rng.shuffle(all_seeds)
-
 	camera_lookat_point = torch.tensor([0, 0, 0.2], device=device) if cfg == 'FFHQ' else torch.tensor([0, 0, 0], device=device)
 
 	# zs = torch.from_numpy(np.stack([np.random.RandomState(seed).randn(G.z_dim) for seed in all_seeds])).to(device)
@@ -121,9 +113,7 @@ def gen_interp_video(
 		wt = G_kwargs['wt']
 	else:
 		wt = None
-	# plane_supp = G_kwargs['plane_supp'] if 'plane_supp' in G_kwargs else None
-	# plane = G_kwargs['plane'] if 'plane' in G_kwargs else None
-	# ws = G.mapping(z=zs, c=c, truncation_psi=psi, truncation_cutoff=truncation_cutoff)
+		
 	_ = G.synthesis(ws[:1], c[:1]) # warm up
 	ws = ws.reshape(grid_h, grid_w, num_keyframes, *ws.shape[1:])
 	if wt is not None:
@@ -267,14 +257,6 @@ def gen_interp_normal_video(
 			raise ValueError('Number of input seeds must be divisible by grid W*H')
 		num_keyframes = len(images) // (grid_w*grid_h)
 
-	# all_seeds = np.zeros(num_keyframes*grid_h*grid_w, dtype=np.int64)
-	# for idx in range(num_keyframes*grid_h*grid_w):
-	#     all_seeds[idx] = seeds[idx % len(seeds)]
-
-	# if shuffle_seed is not None:
-	#     rng = np.random.RandomState(seed=shuffle_seed)
-	#     rng.shuffle(all_seeds)
-
 	camera_lookat_point = torch.tensor([0, 0, 0.2], device=device) if cfg == 'FFHQ' else torch.tensor([0, 0, 0], device=device)
 
 	# zs = torch.from_numpy(np.stack([np.random.RandomState(seed).randn(G.z_dim) for seed in all_seeds])).to(device)
@@ -288,9 +270,7 @@ def gen_interp_normal_video(
 		wt = G_kwargs['wt']
 	else:
 		wt = None
-	# plane_supp = G_kwargs['plane_supp'] if 'plane_supp' in G_kwargs else None
-	# plane = G_kwargs['plane'] if 'plane' in G_kwargs else None
-	# ws = G.mapping(z=zs, c=c, truncation_psi=psi, truncation_cutoff=truncation_cutoff)
+		
 	_ = G.synthesis(ws[:1], c[:1]) # warm up
 	ws = ws.reshape(grid_h, grid_w, num_keyframes, *ws.shape[1:])
 	if wt is not None:
@@ -337,16 +317,7 @@ def gen_interp_normal_video(
 				interp = grid[yi][xi]
 				w = torch.from_numpy(interp(frame_idx / w_frames)).to(device)
 			  
-				# if 'planes_s' in G_kwargs:
-				#     img = G.synthesis_planes(ws=w.unsqueeze(0), c=c[0:1], planes=G_kwargs['planes_s'], planes_t=G_kwargs['planes_t'], noise_mode='const')[image_mode][0]
-				# elif 'wt' in G_kwargs:
-				#     img = G.synthesis(ws=w.unsqueeze(0), c=c[0:1], noise_mode='const', wt=G_kwargs['wt'])[image_mode][0]
-				# else:
 				img = G.synthesis(ws=w.unsqueeze(0), c=c[0:1], noise_mode='const', if_normal=True)['normal'][0]
-
-				# if image_mode == 'image_depth':
-				#     img = -img
-				#     img = (img - img.min()) / (img.max() - img.min()) * 2 - 1
 
 				imgs.append(img)
 
@@ -404,12 +375,6 @@ def gen_video(
 			img = G.synthesis(ws=w, c=c[0:1], noise_mode='const')[image_mode][0]
 		else:
 			assert False
-		# if 'planes_s' in G_kwargs:
-		#     img = G.synthesis_planes(ws=w.unsqueeze(0), c=c[0:1], planes=G_kwargs['planes_s'], planes_t=G_kwargs['planes_t'], noise_mode='const')[image_mode][0]
-		# elif 'wt' in G_kwargs:
-		#     img = G.synthesis(ws=w.unsqueeze(0), c=c[0:1], noise_mode='const', wt=G_kwargs['wt'])[image_mode][0]
-		# else:
-		#     img = G.synthesis(ws=w.unsqueeze(0), c=c[0:1], noise_mode='const')[image_mode][0]
 
 		if image_mode == 'image_depth':
 			img = -img
@@ -481,13 +446,7 @@ def gen_video_ide3d(
 			img = G.synthesis(ws=w, c=c[0:1], noise_mode='const')[image_mode][0]
 		else:
 			assert False
-		# if 'planes_s' in G_kwargs:
-		#     img = G.synthesis_planes(ws=w.unsqueeze(0), c=c[0:1], planes=G_kwargs['planes_s'], planes_t=G_kwargs['planes_t'], noise_mode='const')[image_mode][0]
-		# elif 'wt' in G_kwargs:
-		#     img = G.synthesis(ws=w.unsqueeze(0), c=c[0:1], noise_mode='const', wt=G_kwargs['wt'])[image_mode][0]
-		# else:
-		#     img = G.synthesis(ws=w.unsqueeze(0), c=c[0:1], noise_mode='const')[image_mode][0]
-
+			
 		if image_mode == 'image_depth':
 			img = -img
 			img = (img - img.min()) / (img.max() - img.min()) * 2 - 1
@@ -496,5 +455,4 @@ def gen_video_ide3d(
 
 		video_out.append_data(layout_grid(torch.stack(imgs), grid_w=1, grid_h=1))
 	video_out.close()
-	# all_poses = np.stack(all_poses)
 

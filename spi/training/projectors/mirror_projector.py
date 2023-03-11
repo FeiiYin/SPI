@@ -1,13 +1,3 @@
-# Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
-#
-# NVIDIA CORPORATION and its licensors retain all intellectual property
-# and proprietary rights in and to this software, related documentation
-# and any modifications thereto.  Any use, reproduction, disclosure or
-# distribution of this software and related documentation without an express
-# license agreement from NVIDIA CORPORATION is strictly prohibited.
-
-"""Project given image to the latent space of pretrained network pickle."""
-
 import copy
 import numpy as np
 import torch
@@ -21,10 +11,9 @@ from spi.utils.camera_utils import sample_camera, cal_canonical_c, cal_mirror_c,
 
 def project(
 		G,
-		target: torch.Tensor,  # [C,H,W] and dynamic range [0,255], W & H must match G output resolution
+		target: torch.Tensor,
 		c,
 		lpips_func,
-		# wloss_func,
 		fg_mask,
 		*,
 		initial_w=None,
@@ -41,17 +30,10 @@ def project(
 		image_log_step=global_config.log_snapshot,
 		w_name: str
 ):
-	# print('w_plus_projector.')
 	assert target.shape[1:] == (G.img_channels, G.img_resolution, G.img_resolution)
-
-	# def logprint(*args):
-	# 	if verbose:
-	# 		print(*args)
-
 	G = copy.deepcopy(G).eval().requires_grad_(False).to(device).float() # type: ignore
 
 	# Compute w stats.
-	# logprint(f'Computing W midpoint and stddev using {w_avg_samples} samples...')
 	z_samples = np.random.RandomState(123).randn(w_avg_samples, G.z_dim)
 	c_samples = c.repeat(w_avg_samples, 1)
 	w_samples = G.mapping(torch.from_numpy(z_samples).to(device), c_samples)  # [N, L, C]
@@ -82,13 +64,6 @@ def project(
 
 	# w_gt = wloss_func.cal_w(target, c)
 	batch_size = 2
-
-	# canonical_camera = [c]
-	# for x in [-0.4, 0, 0.4]:
-	# 	cam = cal_canonical_c(yaw_angle=x, pitch_angle=-0.2, batch_size=1, device='cuda')
-	# 	canonical_camera.append(cam)
-	# canonical_camera = torch.cat(canonical_camera, dim=0)
-
 	target_m = torch.flip(target, dims=[3])
 
 	camera_m = cal_mirror_c(camera=c)
@@ -102,10 +77,6 @@ def project(
 	bg_mask = 1 - dilated_mask
 	bg_mask = torch.nn.functional.interpolate(bg_mask, (128, 128), mode='bilinear', align_corners=False)
 	bg_mask_m = torch.flip(bg_mask, dims=[3])
-
-	# print('original_ weight m', weight_m)  # 0.5306
-	# weight_m = 1
-	# target_weight = torch.tensor([1, weight_m[0]]).to(device)
 
 	for step in tqdm(range(num_steps)):
 
@@ -123,8 +94,6 @@ def project(
 		w_noise = torch.randn_like(w_opt) * w_noise_scale
 		ws = (w_opt + w_noise)
 
-		# sample_c = sample_camera(batch_size=batch_size - 4, yaw_range=0.5, pitch_range=0.2, device=device)
-		# new_c = torch.cat([canonical_camera, sample_c], dim=0)
 		ws = ws.repeat(batch_size, 1, 1)
 
 		gen_results = G.synthesis(ws, target_camera, noise_mode='const')
@@ -145,12 +114,10 @@ def project(
 					break
 				noise = F.avg_pool2d(noise, kernel_size=2)
 		
-		# w_loss = wloss_func.cal_loss(synth_images, new_c, w_gt.repeat(batch_size, 1, 1))
-		threshold = torch.max(depth).detach() # + 0.05
+		threshold = torch.max(depth).detach()
 		bg_loss = threshold - torch.mean(depth[:1] * bg_mask + depth[1:] * bg_mask_m)
-		# bg_loss = 0
-		# 0.5 for side effect
-		loss = dist + reg_loss * regularize_noise_weight # + bg_loss * 0.01
+	
+		loss = dist + reg_loss * regularize_noise_weight
 
 		# Step
 		optimizer.zero_grad(set_to_none=True)

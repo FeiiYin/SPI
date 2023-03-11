@@ -189,34 +189,18 @@ def angle_to_rotation(yaw, pitch, roll=0):
     ])
 
     R = yawMatrix * pitchMatrix * rollMatrix
-
-    # theta = math.acos(((R[0, 0] + R[1, 1] + R[2, 2]) - 1) / 2)
-    # multi = 1 / (2 * math.sin(theta))
-
-    # rx = multi * (R[2, 1] - R[1, 2]) * theta
-    # ry = multi * (R[0, 2] - R[2, 0]) * theta
-    # rz = multi * (R[1, 0] - R[0, 1]) * theta
-    # print(R)
     R = torch.from_numpy(R)
     return R
 
 
 def sample_surrounding_camera(middle_camera, batch_size=1, yaw_range=0.1, pitch_range=0.1):
     device = middle_camera.device
-    # angle_p = -0.2
-    # extrinsics = LookAtPoseSampler.sample(horizontal_mean=0, vertical_mean=0, lookat_position=camera_lookat_point, 
-
-    #         horizontal_stddev=yaw_range, vertical_stddev=pitch_range, radius=1, batch_size=batch_size, device=device, sample_mode='uniform')
-    
-    # sample_rotation = extrinsics.view(-1, 4, 4)[:, :3, :3]
-    # sample_rotation = angle_to_rotation(0, 0, 0)
     y = (torch.rand((batch_size, 1), device=device) * 2 - 1) * yaw_range + 0.0
     p = (torch.rand((batch_size, 1), device=device) * 2 - 1) * pitch_range + 0.0
     rot_list = []
     for _y, _p in zip(y, p):
         rot_list.append(angle_to_rotation(yaw=_y, pitch=_p, roll=0))
     sample_rotation = torch.stack(rot_list, dim=0).view(batch_size, 3, 3).float().to(device)
-    # sample_rotation = torch.tensor([[1,0,0],[0,1,0],[0,0,1]]).view(-1, 3, 3).repeat(batch_size, 1, 1).to(device).float()
     
     middle_camera = middle_camera.repeat(batch_size, 1)
     middle_extrinsics = middle_camera[:, :16].view(-1, 4, 4)
@@ -230,21 +214,13 @@ def sample_surrounding_camera(middle_camera, batch_size=1, yaw_range=0.1, pitch_
 
 def calculate_surrounding_camera(middle_camera, batch_size=1, yaw_range=0.1, pitch_range=0.1):
     device = middle_camera.device
-    # angle_p = -0.2
-    # extrinsics = LookAtPoseSampler.sample(horizontal_mean=0, vertical_mean=0, lookat_position=camera_lookat_point, 
-
-    #         horizontal_stddev=yaw_range, vertical_stddev=pitch_range, radius=1, batch_size=batch_size, device=device, sample_mode='uniform')
-    
-    # sample_rotation = extrinsics.view(-1, 4, 4)[:, :3, :3]
-    # sample_rotation = angle_to_rotation(0, 0, 0)
     y = (torch.ones((batch_size, 1), device=device) * 2 - 1) * yaw_range + 0.0
     p = (torch.ones((batch_size, 1), device=device) * 2 - 1) * pitch_range + 0.0
     rot_list = []
     for _y, _p in zip(y, p):
         rot_list.append(angle_to_rotation(yaw=_y, pitch=_p, roll=0))
     sample_rotation = torch.stack(rot_list, dim=0).view(batch_size, 3, 3).float().to(device)
-    # sample_rotation = torch.tensor([[1,0,0],[0,1,0],[0,0,1]]).view(-1, 3, 3).repeat(batch_size, 1, 1).to(device).float()
-    
+
     middle_camera = middle_camera.repeat(batch_size, 1)
     middle_extrinsics = middle_camera[:, :16].view(-1, 4, 4)
     
@@ -252,21 +228,6 @@ def calculate_surrounding_camera(middle_camera, batch_size=1, yaw_range=0.1, pit
     new_middle_camera = middle_camera.clone()
     new_middle_camera[:, :16] = middle_extrinsics.view(-1, 16)
     return new_middle_camera
-
-# def sample_surrounding_camera(middle_camera, batch_size=1, yaw_range=0.1, pitch_range=0.1):
-#     device = middle_camera.device
-#     angle_p = -0.2
-#     camera_lookat_point = torch.tensor([0, 0, 0.2], device=device)
-
-#     assert middle_camera.shape[0] == 1
-#     middle_rot = middle_camera.view(-1, 25)[:, :16].view(-1, 4, 4)[:, :3, :3]
-#     x, y, z = rotationMatrixToEulerAngles(middle_rot)
-
-#     extrinsics = LookAtPoseSampler.sample(horizontal_mean=np.pi/2 + y, vertical_mean=np.pi/2 + angle_p, lookat_position=camera_lookat_point, 
-#                         horizontal_stddev=yaw_range, vertical_stddev=pitch_range, radius=2.7, batch_size=batch_size, device=device, sample_mode='uniform')
-#     intrinsics = torch.tensor([[4.2647, 0, 0.5], [0, 4.2647, 0.5], [0, 0, 1]], device=device).view(1, 9).repeat(batch_size, 1)
-#     camera = torch.cat([extrinsics.view(-1, 16), intrinsics.view(-1, 9)], dim=1)
-#     return camera
 
 
 def cal_canonical_c(yaw_angle=0, pitch_angle=0, batch_size=1, device='cpu'):
@@ -416,22 +377,6 @@ def cal_camera_weight_linear(camera):
     weight = torch.stack(weight, dim=0)
     return weight
 
-
-# def cal_camera_weight_reverse(camera):
-#     weight = []
-#     for c in camera:
-#         y, p, r = rotation_to_angle(c.view(25)[:16].view(4, 4)[:3, :3])
-#         # torch.relu() TanH or SigMoid
-#         w = min(torch.abs(y), 1)
-#         w = 1 - w
-#         # w = (w - 0.15)
-#         w = w / 2.0
-#         w = min(w, 0.5)
-#         w = max(w, 0.1)
-#         weight.append(w)
-#     weight = torch.stack(weight, dim=0)
-#     return weight
-
 try:
     GAUSS_CONST = torch.sqrt(torch.tensor(2 * torch.pi)).cuda()
 except:
@@ -445,10 +390,7 @@ def cal_camera_gauss_weight(camera):
     weight = []
     for c in camera:
         y, p, r = rotation_to_angle(c.view(25)[:16].view(4, 4)[:3, :3])
-        # y = torch.tensor([0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]).cuda()
-        # [0.3836, 0.3718, 0.3385, 0.2896, 0.2327, 0.1756, 0.1245, 0.0830, 0.0519]
         w = gauss_function(y, std=0.4)/2.6
-        # w = min(w, 0.5)
         weight.append(w)
     return weight
 
@@ -476,25 +418,12 @@ def rotationMatrixToEulerAngles(R):
     x = torch.atan2(R[:, 2,1] , R[:, 2,2])  # x = math.atan2(R[2,1] , R[2,2])
     y = torch.atan2(-R[:, 2,0], sy)
     z = torch.atan2(R[:, 1,0], R[:, 0,0])
-    # else :
-    # x = torch.atan2(-R[:, 1, 2], R[:, 1, 1])
-    # x = torch.atan2(R[:, 2,1] , R[:, 2,2])
-    # y = torch.atan2(-R[:, 2, 0], sy)
-    # z = 0
     return x, y, z
 
 
 
 def check_front(camera, EPS=0.1):
     rotation = camera.view(-1, 25)[:, :16].view(-1, 4, 4)[:, :3, :3]
-    # angle_p = -0.2
-    # device = 'cuda'
-    # camera_lookat_point = torch.tensor([0, 0, 0.2], device=device)
-    # extrinsics = LookAtPoseSampler.sample(horizontal_mean=np.pi/2, vertical_mean=np.pi/2 + angle_p, lookat_position=camera_lookat_point, 
-    #                     horizontal_stddev=0.8, vertical_stddev=0.2, radius=2.7, batch_size=4, device=device, sample_mode='uniform')
-    # rotation = extrinsics[:, :3, :3]
     x, y, z= rotationMatrixToEulerAngles(rotation)
     if_front = (torch.abs(y) < EPS) # * (torch.abs(x) - 3.0037 < 0.005)
-    # print(x, y, z)
-    # print(if_front)
     return if_front

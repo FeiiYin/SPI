@@ -40,8 +40,6 @@ class SingleIDCoach(BaseCoach):
             if self.image_counter >= hyperparameters.max_images_to_invert:
                 break
             image_name = data['name'][0]
-            # if image_name not in ['chris_evans']:
-            #     continue
 
             image = data['img'].to(global_config.device)
             camera = data['c'].to(global_config.device)
@@ -92,7 +90,6 @@ class SingleIDCoach(BaseCoach):
                 self.log_video(w_pivot, self.G, path=os.path.join(paths_config.experiments_output_dir, f'{image_name}_G1_inv.mp4'))
                 
                 self.cal_metric(G1_inv, image, 'G1_inv', fake_m=G1_inv_m)
-                # torch.save(self.G, f'{paths_config.checkpoints_dir}/model_{global_config.run_name}_{image_name}.pt')
             
             self.post_process(w_pivot, camera, self.G, image_name)
         

@@ -5,8 +5,6 @@ from spi.configs import paths_config, hyperparameters, global_config
 from .base_coach import BaseCoach
 from spi.utils.mask_utils import calculate_face_mask
 from spi.utils.camera_utils import cal_mirror_c
-# from mpti.draw_image.novel_view_visualization import draw_shape_for_render as draw
-# from mpti.draw_image.novel_view_visualization import gen_video
 
 
 class InferenceCoach(BaseCoach):

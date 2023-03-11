@@ -23,14 +23,5 @@ def metric(gt, w, c, G, lpips_func):
 
     l2 = l2_loss(gt, fake)
     lpips = lpips_func(gt, fake)
-    # print(f'[L2]: {l2:.6f}')
-    # print(f'[LPIPS]: {lpips:.6f}')
     return l2, lpips
 
-
-# def metric_image(gt, fake):
-#     l2 = l2_loss(gt, fake)
-#     lpips = lpips_loss(gt, fake)
-#     print(f'[L2]: {l2:.6f}')
-#     print(f'[LPIPS]: {lpips:.6f}')
-#     return l2, lpips
