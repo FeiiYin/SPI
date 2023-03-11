@@ -1,12 +1,12 @@
-EG3D_PATH = '/apdcephfs_cq2/share_1290939/feiiyin/InvEG3D_result/pretrain/checkpoints/ffhqrebalanced512-128.pkl'
-IDLOSS_PATH = '/apdcephfs_cq2/share_1290939/feiiyin/InvEG3D_result/pretrain/cache/model_ir_se50.pth'
+EG3D_PATH = 'checkpoints/ffhqrebalanced512-128.pkl'
+IDLOSS_PATH = 'checkpoints/model_ir_se50.pth'
 LPIPS_PATH = ''
-BISENET_PATH = '/apdcephfs_cq2/share_1290939/feiiyin/InvEG3D_result/pretrain/checkpoints/bisenet.pth'
-VGG_PATH = '/apdcephfs_cq2/share_1290939/feiiyin/InvEG3D_result/pretrain/cache/vgg16.pt'
+BISENET_PATH = 'checkpoints/bisenet.pth'
+VGG_PATH = 'checkpoints/vgg16.pt'
 
 
 # Dirs for output files
-root = '/apdcephfs_cq2/share_1290939/feiiyin/3DINV/3DINV_output/'
+root = 'test/output/'
 checkpoints_dir = root + 'checkpoints/'
 embedding_base_dir = root + 'embedding/'
 experiments_output_dir = root + 'experiments/'

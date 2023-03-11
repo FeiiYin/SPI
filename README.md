@@ -1,6 +1,13 @@
 ## SPI: 3D GAN Inversion with Facial Symmetry Prior [CVPR 2023]
 
-[Project](https://feiiyin.github.io/SPI/) | [Paper](https://arxiv.org/pdf/2211.16927.pdf)
+> **SPI: 3D GAN Inversion with Facial Symmetry Prior** <br>
+> [Project](https://feiiyin.github.io/SPI/)
+> [Paper](https://arxiv.org/pdf/2211.16927.pdf)
+> CVPR 2023
+
+<div align=center>
+<img src="./assets/pipeline-2.jpg" width=700px>
+</div>
 
 #### Abstract 
 
@@ -11,19 +18,18 @@ Although with the facial prior preserved in pre-trained 3D GANs, 3D GAN Inversio
 Follow [EG3D](https://github.com/NVlabs/eg3d) to install the environment.
 
 
-### Quick Start
+# Quick Start
 
 #### Pretrained Models
 
-Please download our [pre-trained model]() and put it in ./checkpoints.
+Please download our [pre-trained model](https://drive.google.com/drive/folders/1T4aZ65I23gEs6tDkSK5HJfB7yrp_0pLX?usp=sharing) and put it in `./checkpoints`.
 
 | Model | Description
 | :--- | :----------
-|checkpoints/Encoder_e4e.pth | Pre-trained E4E StyleGAN Inversion Encoder.
-|checkpoints/hfgi.pth | Pre-trained HFGI StyleGAN Inversion Encoder.
-|checkpoints/StyleGAN_e4e.pth | Pre-trained StyleGAN.
-
-TODO
+|checkpoints/ffhqrebalanced512-128.pkl | Pre-trained EG3D Generator.
+|checkpoints/model_ir_se50.pth | Pre-trained arc-face encoder.
+|checkpoints/bisenet.pth | Pre-trained face parsing encoder.
+|checkpoints/vgg16.pt | Pre-trained VGG-16 network.
 
 Please download the checkpoint and place them at `./checkpoints/`.
 You can also change the path in `spi/configs/path_config.py` with your custom path.
