@@ -23,7 +23,7 @@ Follow [EG3D](https://github.com/NVlabs/eg3d) to install the environment.
 
 #### Pretrained Models
 
-Please download our [pre-trained model](https://drive.google.com/drive/folders/1T4aZ65I23gEs6tDkSK5HJfB7yrp_0pLX?usp=sharing) and put it in `./checkpoints`.
+Please download our [pre-trained model](https://drive.google.com/drive/folders/1T4aZ65I23gEs6tDkSK5HJfB7yrp_0pLX?usp=sharing) and put it in `./checkpoints`. 3DMM files (BFM/ and epoch_20.pth) can be obtained in this [Link](https://drive.google.com/drive/folders/1BtETxoWlVRoPI6vcySAzimfhemmpc4px).
 
 | Model | Description
 | :--- | :----------
@@ -31,6 +31,8 @@ Please download our [pre-trained model](https://drive.google.com/drive/folders/1
 |checkpoints/model_ir_se50.pth | Pre-trained arc-face encoder.
 |checkpoints/bisenet.pth | Pre-trained face parsing encoder.
 |checkpoints/vgg16.pt | Pre-trained VGG-16 network.
+|checkpoints/BFM/ | 3DMM related file.
+|checkpoints/model_name/epoch_20.pth | Pre-trained Deep-Face-Recon network.
 
 Please download the checkpoint and place them at `./checkpoints/`.
 You can also change the path in `spi/configs/path_config.py` with your custom path.
