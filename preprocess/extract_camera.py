@@ -55,8 +55,8 @@ class CameraExtractor:
 		self.c_outdir = c_outdir
 
 		self.model_3dmm = Extract3dmm({
-			'BFM': '/apdcephfs/share_1290939/feiiyin/TH/PIRender_bak/Deep3DFaceRecon_pytorch/BFM/', 
-			'3DMM': '/apdcephfs/share_1290939/feiiyin/TH/PIRender_bak/Deep3DFaceRecon_pytorch/checkpoints/model_name/epoch_20.pth',
+			'BFM': 'checkpoints/BFM/', 
+			'3DMM': 'checkpoints/model_name/epoch_20.pth',
 		})
 		self.lm3d_std = self.model_3dmm.lm3d_std
 		self.mode = mode
