@@ -8,6 +8,7 @@ import torch
 
 
 detector = face_alignment.FaceAlignment(face_alignment.LandmarksType._2D)
+# detector = face_alignment.FaceAlignment(face_alignment.LandmarksType.TWO_D) # update to TWO_D if using newest face_alignment library
 
 
 def get_landmark(image):
